@@ -1,5 +1,5 @@
 from flask import Flask, request, jsonify
-from pyproj import Transformer
+from pyproj import Transformer, CRS
 
 # Initialize Flask app
 app = Flask(__name__)
@@ -16,11 +16,16 @@ def transform_crs():
 
         transformer = Transformer.from_crs(4326, target_epsg)
         proj_string = transformer.to_proj4()
+        crs = CRS.from_epsg(target_epsg)
 
         return jsonify({
             "source_epsg": 4326,
             "target_epsg": target_epsg,
-            "proj4": proj_string
+            "proj4": proj_string,
+            "name": crs.name,
+            "datum": crs.datum.name,
+            "description": transformer.description,
+            "area_of_use": crs.area_of_use.name
         })
 
     except Exception as e:
